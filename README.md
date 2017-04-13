@@ -1,6 +1,6 @@
 # Scuttles
 
-Miscellanoeus Secure Scuttlebutt stuff
+Miscellaneous Secure Scuttlebutt stuff
 
 ## ssbvan
 
