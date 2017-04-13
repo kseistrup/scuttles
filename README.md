@@ -40,4 +40,9 @@ you will find a complete `secret` file for your `~/.ssb` directory.
 
 Try `ssbvan --help` for more information.
 
+### Requirements
+
+* Python 3
+  * ed25519 module (‘pip install ed25519’)
+
 :smile:
