@@ -10,6 +10,7 @@ optional arguments:
   -h, --help            show this help message and exit
   -v, --version         show version information and exit
   -c, --copyright       show copying policy and exit
+  -i, --ignore-case     ignore case distinctions in REGEX
   -n MAXITER, --maxiter MAXITER
                         exit after MAXITER iterations
 
@@ -52,8 +53,8 @@ except (ImportError, ModuleNotFoundError) as imperr:
 
 __author__ = 'Klaus Alexander Seistrup <klaus@seistrup.dk>'
 __whoami__ = 'ssbvan'
-__revision__ = '2017-04-13'
-__version__ = '0.1.1 ({})'.format(__revision__)
+__revision__ = '2017-04-15'
+__version__ = '0.2.0 ({})'.format(__revision__)
 __copyright__ = """\
 ssbvan {}
 Copyright © 2017 Klaus Alexander Seistrup <klaus@seistrup.dk>
@@ -172,6 +173,8 @@ def main(progname=__whoami__):
     parser.add_argument('-c', '--copyright', action='version',
                         version=__copyright__,
                         help='show copying policy and exit')
+    parser.add_argument('-i', '--ignore-case', action='store_true',
+                        help='ignore case distinctions in REGEX')
     parser.add_argument('-n', '--maxiter', type=int,
                         help='exit after MAXITER iterations')
     parser.add_argument('REGEX', nargs='?', help='match this regex')
@@ -179,13 +182,14 @@ def main(progname=__whoami__):
     args = parser.parse_args()
     debug('args', args)
 
+    flags = re.IGNORECASE if args.ignore_case else 0
     maxiter = 255 ** 19 if args.maxiter is None else args.maxiter
 
     if maxiter < 1:
         die('MAXITER must be greater than 1')
 
     try:
-        regex = re.compile(args.REGEX or '.', re.IGNORECASE)
+        regex = re.compile(args.REGEX or '.', flags=flags)
         secret = vanitygen(regex, maxiter)
         if secret is None:
             error = "Didn't find a matching pubkey in {} iterations.".format(
