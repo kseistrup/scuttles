@@ -45,4 +45,21 @@ Try `ssbvan --help` for more information.
 * Python 3
   * ed25519 module (‘pip install ed25519’)
 
+## secexp / secimp
+
+Export resp. import an SSB ‘secret’ file.
+
+When exporting a key, only the part essential for restoring the original
+key is exported — either in a long form (the default) or a shorter form.
+Both formats are suitable for use with e.g. the `ssss` (Shamir's Secret
+Sharing Scheme), but the shorter form is approximately half the size of
+the full key:
+
+```sh
+$ secexp < test/secret
+ySzrVzivOW7gmiOC3GEnBJcsFc7B0OlFF6CgxPLaA6y+ggNiwZHQh18mED7A13uclLaxBdOovmECp7UEvD/e1A==
+$ secexp --private-only < test/secret
+ySzrVzivOW7gmiOC3GEnBJcsFc7B0OlFF6CgxPLaA6w=
+```
+
 :smile:
