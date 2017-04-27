@@ -60,6 +60,13 @@ $ secexp < test/secret
 ySzrVzivOW7gmiOC3GEnBJcsFc7B0OlFF6CgxPLaA6y+ggNiwZHQh18mED7A13uclLaxBdOovmECp7UEvD/e1A==
 $ secexp --private-only < test/secret
 ySzrVzivOW7gmiOC3GEnBJcsFc7B0OlFF6CgxPLaA6w=
+$ secexp --private-only < test/secret | secimp -j
+{
+  "curve": "ed25519",
+  "public": "voIDYsGR0IdfJhA+wNd7nJS2sQXTqL5hAqe1BLw/3tQ=.ed25519",
+  "private": "ySzrVzivOW7gmiOC3GEnBJcsFc7B0OlFF6CgxPLaA6y+ggNiwZHQh18mED7A13uclLaxBdOovmECp7UEvD/e1A==.ed25519",
+  "id": "@voIDYsGR0IdfJhA+wNd7nJS2sQXTqL5hAqe1BLw/3tQ=.ed25519"
+}
 ```
 
 :smile:
