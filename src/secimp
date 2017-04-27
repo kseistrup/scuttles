@@ -1,0 +1,243 @@
+#!/usr/bin/env python3
+# -*- mode: python; coding: utf-8 -*-
+"""
+Usage: secimp [OPTIONS]
+
+optional arguments:
+  -h, --help       show this help message and exit
+  -v, --version    show version information and exit
+  -c, --copyright  show copying policy and exit
+or:
+  -j, --json-only  no comments in output
+
+A base64 encoded ed25519 private key is read from standard
+input and an SSB ‘secret’ compatible file is written to
+standard output — with or without comments.
+"""
+##############################################################################
+# This program is free software; you can redistribute it and/or modify it    #
+# under the terms of the GNU General Public License as published by the Free #
+# Software Foundation; either version 3 of the License, or (at your option)  #
+# any later version.                                                         #
+#                                                                            #
+# This program is distributed in the hope that it will be useful, but with-  #
+# out any warranty; without even the implied warranty of merchantability or  #
+# fitness for a particular purpose. See the GNU General Public License for   #
+# more details.  <http://gplv3.fsf.org/>                                     #
+##############################################################################
+
+import sys
+import os
+import pathlib
+import argparse
+import binascii
+
+from pprint import pprint
+
+try:
+    from locale import (Error, setlocale, LC_ALL)
+    _ = setlocale(LC_ALL, '')
+except (ImportError, ModuleNotFoundError, NameError, Error):
+    pass
+
+__author__ = 'Klaus Alexander Seistrup <klaus@seistrup.dk>'
+__whoami__ = 'secimp'
+__revision__ = '2017-04-27'
+__version__ = '0.1.0 ({})'.format(__revision__)
+__copyright__ = """\
+secimp {}
+Copyright © 2017 Klaus Alexander Seistrup <klaus@seistrup.dk>
+
+This is free software; see the source for copying conditions. There is no
+warranty; not even for merchantability or fitness for a particular purpose.\
+""".format(__version__)
+
+DEBUG = os.environ.get('DEBUG', 'False')[0].upper() in '1JTY'  # 1/Ja/True/Yes
+EPILOG = """
+A base64 encoded ed25519 private key is read from standard
+input and an SSB ‘secret’ compatible file is written to
+standard output — with or without comments.
+"""
+
+(STDIN, STDOUT, STDERR) = (sys.stdin, sys.stdout, sys.stderr)
+
+LONG_SECRET = """
+# This is your SECRET name.
+# This name gives you magical powers.
+# With it you can mark your messages so that your friends can verify
+# that they really did come from you.
+#
+# If any one learns this name, they can use it to destroy your identity.
+# NEVER show this to anyone!
+
+{{
+  "curve": "ed25519",
+  "public": "{pubkey}.ed25519",
+  "private": "{privkey}.ed25519",
+  "id": "@{pubkey}.ed25519"
+}}
+
+# WARNING: It's vital that you DO NOT edit OR share your secret name
+# instead, share your public name.
+# Your public name: @{pubkey}.ed25519
+"""
+
+SHORT_SECRET = """
+{{
+  "curve": "ed25519",
+  "public": "{pubkey}.ed25519",
+  "private": "{privkey}.ed25519",
+  "id": "@{pubkey}.ed25519"
+}}
+"""
+
+
+def debug(head, data=None):
+    """Possibly pretty print an object to stderr"""
+    if DEBUG:
+        pprint(head if data is None else {head: data}, stream=STDERR)
+
+
+def deuglify(error):
+    """Deuglify the EnvironmentError class of errors"""
+    debug('ugly', error)
+
+    if not isinstance(error, Exception):
+        return error
+
+    nargs = len(error.args)
+
+    if nargs == 1:
+        return str(error)
+
+    strerr = getattr(error, 'strerror', None)
+
+    if nargs == 2 and strerr is not None:
+        fname1 = getattr(error, 'filename', None)
+        fname2 = getattr(error, 'filename2', None)
+
+        if fname1 and fname2:
+            return '{}: {} → {}'.format(strerr, fname1, fname2)
+        if fname1 or fname2:
+            return '{}: {}'.format(strerr, fname1 or fname2)
+
+        return strerr
+
+    # Let's not pretend that we know the nature on the exception
+    return error
+
+
+def die(error=None):
+    """Exit gracefully"""
+    debug('exit', error)
+
+    if error:
+        print(deuglify(error), file=STDERR)
+
+    sys.exit(1 if error else 0)
+
+
+def read_privkey():
+    """Read private keyfile from standard input"""
+    blob = []
+
+    for line in map(lambda s: s.strip(), STDIN):
+        if not line:
+            continue
+        if line.startswith('#'):
+            continue
+        blob.append(line)
+
+    return binascii.a2b_base64(''.join(blob))
+
+
+def keypair_from_seed(binkey):
+    """Reconstruct an ed25519 keypair from its seed"""
+    if len(binkey) != 32:
+        error = 'Seed MUST be 32 bytes (was {:n})'.format(len(binkey))
+        die(error)
+
+    try:
+        import ed25519
+    except (ImportError, ModuleNotFoundError):
+        die(error)
+
+    privkey = ed25519.SigningKey(binkey)
+    pubkey = privkey.get_verifying_key()
+
+    return (privkey.to_bytes(), pubkey.to_bytes())
+
+
+def get_secret(binkey, short=False):
+    """Write a ‘secret’ file from a private key"""
+    keylen = len(binkey)
+
+    if keylen not in (64, 32):
+        error = 'Private key MUST be 32 or 64 bytes (was {:n})'.format(keylen)
+        die(error)
+
+    if keylen == 64:
+        (privkey, pubkey) = (binkey, binkey[32:])
+    else:
+        (privkey, pubkey) = keypair_from_seed(binkey)
+
+    def base64(blob):
+        """Base64 encode a binary blob"""
+        return binascii.b2a_base64(blob).decode('us-ascii').strip()
+
+    template = SHORT_SECRET if short else LONG_SECRET
+
+    return template.format(
+        privkey=base64(privkey),
+        pubkey=base64(pubkey)
+    )
+
+
+def main(progname=__whoami__):
+    """Main entry point"""
+
+    debug('argv', sys.argv)
+
+    parser = argparse.ArgumentParser(
+        prog=progname,
+        formatter_class=argparse.RawTextHelpFormatter,
+        epilog=EPILOG
+    )
+    parser.add_argument('-v', '--version', action='version',
+                        version='%(prog)s/{}'.format(__version__),
+                        help='show version information and exit')
+    parser.add_argument('-c', '--copyright', action='version',
+                        version=__copyright__,
+                        help='show copying policy and exit')
+    parser.add_argument('-j', '--json-only', action='store_true',
+                        default=False, help='no comments in output')
+
+    args = parser.parse_args()
+    debug('args', args)
+
+    exitcode = 1
+
+    try:
+        privkey = read_privkey()
+        result = get_secret(privkey, args.json_only)
+        print(result.strip())
+        exitcode = 0
+    except (KeyboardInterrupt, BrokenPipeError):
+        die()
+    except (UnicodeDecodeError, UnicodeEncodeError) as error:
+        die(error)
+    except (binascii.Error, binascii.Incomplete) as error:
+        die('Invalid base64: {}'.format(error))
+    except (IOError, OSError) as error:
+        die(error)
+    # Pylint hates this, but I dislike uncaught exceptions
+    except Exception as error:
+        die(error)
+
+    return exitcode
+
+
+if __name__ == '__main__':
+    sys.exit(main(pathlib.Path(sys.argv[0]).name))
+
+# eof
