@@ -40,11 +40,6 @@ you will find a complete `secret` file for your `~/.ssb` directory.
 
 Try `ssbvan --help` for more information.
 
-### Requirements
-
-* Python 3
-  * ed25519 module (‘pip install ed25519’)
-
 ## secexp / secimp
 
 Export resp. import an SSB ‘secret’ file.
@@ -68,5 +63,12 @@ $ secexp --private-only < test/secret | secimp -j
   "id": "@voIDYsGR0IdfJhA+wNd7nJS2sQXTqL5hAqe1BLw/3tQ=.ed25519"
 }
 ```
+
+----
+
+### Requirements
+
+* Python 3
+  * ed25519 module (‘pip install ed25519’)
 
 :smile:
