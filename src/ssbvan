@@ -45,16 +45,17 @@ except (ImportError, ModuleNotFoundError, NameError, Error):
 
 # 3rd party modules
 try:
-    import ed25519
+    import nacl.signing
+    import nacl.encoding
 except (ImportError, ModuleNotFoundError) as imperr:
     print(imperr, file=sys.stderr)
-    print("Try 'pip install ed25519'", file=sys.stderr)
+    print("Try 'pip install pynacl'", file=sys.stderr)
     sys.exit(1)
 
 __author__ = 'Klaus Alexander Seistrup <klaus@seistrup.dk>'
 __whoami__ = 'ssbvan'
-__revision__ = '2017-04-15'
-__version__ = '0.2.0 ({})'.format(__revision__)
+__revision__ = '2017-05-25'
+__version__ = '0.2.1 ({})'.format(__revision__)
 __copyright__ = """\
 ssbvan {}
 Copyright © 2017 Klaus Alexander Seistrup <klaus@seistrup.dk>
@@ -81,9 +82,9 @@ SECRET = """
 
 {{
   "curve": "ed25519",
-  "public": "{pubkey}.ed25519",
+  "id": "@{pubkey}.ed25519",
   "private": "{privkey}.ed25519",
-  "id": "@{pubkey}.ed25519"
+  "public": "{pubkey}.ed25519"
 }}
 
 # WARNING: It's vital that you DO NOT edit OR share your secret name
@@ -145,12 +146,15 @@ def base64(bytesbuf):
 def vanitygen(regex, maxiter):
     """Find an Ed25519 pubkey that matches REGEX"""
     while maxiter:
-        (sec, pub) = ed25519.create_keypair()
-        pub64 = base64(pub.to_bytes())
+        sec = nacl.signing.SigningKey.generate()
+        pub = sec.verify_key
+        pub64 = pub.encode(
+            encoder=nacl.encoding.Base64Encoder
+        ).decode('us-ascii')
         if regex.match(pub64):
             return SECRET.format(
                 pubkey=pub64,
-                privkey=base64(sec.to_bytes())
+                privkey=base64(sec.encode() + pub.encode())
             ).strip()
         maxiter -= 1
 

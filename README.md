@@ -69,6 +69,6 @@ $ secexp --private-only < test/secret | secimp -j
 ### Requirements
 
 * Python 3
-  * ed25519 module (‘pip install ed25519’)
+  * pynacl module (‘pip install pynacl’)
 
 :smile:
