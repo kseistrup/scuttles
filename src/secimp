@@ -42,8 +42,8 @@ except (ImportError, ModuleNotFoundError, NameError, Error):
 
 __author__ = 'Klaus Alexander Seistrup <klaus@seistrup.dk>'
 __whoami__ = 'secimp'
-__revision__ = '2017-04-27'
-__version__ = '0.1.0 ({})'.format(__revision__)
+__revision__ = '2017-05-25'
+__version__ = '0.1.1 ({})'.format(__revision__)
 __copyright__ = """\
 secimp {}
 Copyright © 2017 Klaus Alexander Seistrup <klaus@seistrup.dk>
@@ -72,9 +72,9 @@ LONG_SECRET = """
 
 {{
   "curve": "ed25519",
-  "public": "{pubkey}.ed25519",
+  "id": "@{pubkey}.ed25519",
   "private": "{privkey}.ed25519",
-  "id": "@{pubkey}.ed25519"
+  "public": "{pubkey}.ed25519"
 }}
 
 # WARNING: It's vital that you DO NOT edit OR share your secret name
@@ -85,9 +85,9 @@ LONG_SECRET = """
 SHORT_SECRET = """
 {{
   "curve": "ed25519",
-  "public": "{pubkey}.ed25519",
+  "id": "@{pubkey}.ed25519",
   "private": "{privkey}.ed25519",
-  "id": "@{pubkey}.ed25519"
+  "public": "{pubkey}.ed25519"
 }}
 """
 

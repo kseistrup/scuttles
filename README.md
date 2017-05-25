@@ -19,9 +19,9 @@ $ ssbvan pub
 
 {
   "curve": "ed25519",
-  "public": "PUBcjocUqNPuvFa5NTNy4tx5bzUJC4Tuk0mpjhWTQQY=.ed25519",
+  "id": "@PUBcjocUqNPuvFa5NTNy4tx5bzUJC4Tuk0mpjhWTQQY=.ed25519",
   "private": "F0xuLYUQ1E5+qez2+ex1203qOWX5U0U0dfxewOevizU9QFyOhxSo0+68Vrk1M3Li3HlvNQkLhO6TSamOFZNBBg==.ed25519",
-  "id": "@PUBcjocUqNPuvFa5NTNy4tx5bzUJC4Tuk0mpjhWTQQY=.ed25519"
+  "public": "PUBcjocUqNPuvFa5NTNy4tx5bzUJC4Tuk0mpjhWTQQY=.ed25519"
 }
 
 # WARNING: It's vital that you DO NOT edit OR share your secret name
@@ -58,9 +58,9 @@ ySzrVzivOW7gmiOC3GEnBJcsFc7B0OlFF6CgxPLaA6w=
 $ secexp --private-only < test/secret | secimp -j
 {
   "curve": "ed25519",
-  "public": "voIDYsGR0IdfJhA+wNd7nJS2sQXTqL5hAqe1BLw/3tQ=.ed25519",
+  "id": "@voIDYsGR0IdfJhA+wNd7nJS2sQXTqL5hAqe1BLw/3tQ=.ed25519",
   "private": "ySzrVzivOW7gmiOC3GEnBJcsFc7B0OlFF6CgxPLaA6y+ggNiwZHQh18mED7A13uclLaxBdOovmECp7UEvD/e1A==.ed25519",
-  "id": "@voIDYsGR0IdfJhA+wNd7nJS2sQXTqL5hAqe1BLw/3tQ=.ed25519"
+  "public": "voIDYsGR0IdfJhA+wNd7nJS2sQXTqL5hAqe1BLw/3tQ=.ed25519"
 }
 ```
 
