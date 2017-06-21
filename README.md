@@ -72,3 +72,7 @@ $ secexp --private-only < test/secret | secimp -j
   * pynacl module (‘pip install pynacl’)
 
 :smile:
+
+* If you haven't used yet pip for python3, you need to do the following, e.g. on Ubuntu:
+  * apt-get install python3-pip
+  * pip3 install pynacl
