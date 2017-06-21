@@ -4,8 +4,7 @@ Miscellaneous Secure Scuttlebutt stuff
 
 ## ssbvan
 
-A vanity address generator for `sbot`. Let's say you're gonna run a
-pub and you want its public address to begin with the letters PUB:
+A vanity address generator for `sbot`. Let's say you're gonna run a pub and you want its public address to begin with the letters PUB:
 
 ```sh
 $ ssbvan pub
@@ -40,19 +39,13 @@ you will find a complete `secret` file for your `~/.ssb` directory.
 
 Try `ssbvan --help` for more information.
 
-Please note that the time need for each additional ‘vanity character’
-increases exponentially. You may want to keep the number at or below, say,
-4-6 characters.
+Please note that the time need for each additional ‘vanity character’ increases exponentially. You may want to keep the number at or below, say, 4-6 characters.
 
 ## secexp / secimp
 
 Export resp. import an SSB ‘secret’ file.
 
-When exporting a key, only the part essential for restoring the original
-key is exported — either in a long form (the default) or a shorter form.
-Both formats are suitable for use with e.g. the
-[ssss](http://point-at-infinity.org/ssss/ "Shamir's Secret Sharing Scheme")
-util but the shorter form is approximately half the size of the full key:
+When exporting a key, only the part essential for restoring the original key is exported — either in a long form (the default) or a shorter form. Both formats are suitable for use with e.g. the [ssss](http://point-at-infinity.org/ssss/ "Shamir's Secret Sharing Scheme") util but the shorter form is approximately half the size of the full key:
 
 ```sh
 $ secexp < test/secret
